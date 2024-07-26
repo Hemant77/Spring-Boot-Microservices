@@ -1,0 +1,347 @@
+openapi: 3.0.3
+info:
+  title: Crick App - OpenAPI 3.0
+  description: |-
+    This is Swagger API provides endpoints for Team Management mircoservice.    
+    Reference links:
+    - [The Cric App specification document]()
+    - [The Cric App ource code]
+  contact:
+    email: hemant.dhamal@nttdata.com
+  version: 1.0
+servers:
+  - url: http://localhost:8080/api/v1/
+tags:
+  - name: Team Management Service
+    description: Access Team management APIs
+paths:
+  /teams:
+    post:
+      tags:
+        - Team Management Service
+      summary: Create team's profile
+      description: "Enter a team details"
+      operationId: createTeamProfile
+      requestBody:
+        description: Create a new team profile
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamProfile'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/TeamProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamProfile'
+        required: true
+      responses:
+        '201':
+          description: Team's profile created successfully
+        '400':
+          description: Invalid input parameters
+        '401':
+          description: Unautherized request
+
+    put:
+      tags:
+        - Team Management Service
+      summary: Update team profile
+      description: "Enter team details"
+      operationId: updateTeamProfile
+      requestBody:
+        description: Update existing team profile details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamProfile'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/TeamProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamProfile'
+      responses:
+        '200':
+          description: Team's profile updated successfully
+        '400':
+          description: Invalid input parameters
+        '401':
+          description: Unautherized request
+        '404':
+          description: Team profile not found
+
+  /teams/{teamName}:
+    get:
+      tags:
+        - Team Management Service
+      summary: Returns team profile
+      description: Returns Teams profile by team name
+      operationId: getTeamProfileByName
+      parameters:
+        - name: teamName
+          in: path
+          description: Name of team that needs to be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamProfile'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TeamProfile'
+        '400':
+          description: Invalid team ID supplied
+        '404':
+          description: Team profile not found
+
+  /squads:
+    post:
+      tags:
+        - Team Management Service
+      summary: Create players squad
+      description: Enter squad details
+      operationId: createSquad
+      requestBody:
+        description: Create a new squad
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Squad'
+        required: true
+      responses:
+        '201':
+          description: Squad created successfully
+        '400':
+          description: Invalid input parameters
+        '401':
+          description: Unautherized request
+
+    put:
+      tags:
+        - Team Management Service
+      summary: Update players squad
+      description: Enter squad details
+      operationId: updateSquad
+      requestBody:
+        description: Update existing squad
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Squad'
+        required: true
+      responses:
+        '201':
+          description: Squad created successfully
+        '400':
+          description: Invalid input parameters
+        '401':
+          description: Unautherized request
+        '404':
+          description: Squad not found
+    
+  /squads/{teamId}/{matchId}:
+    get:
+      tags:
+        - Team Management Service
+      summary: Returns full squad
+      description: Returns Teams profile by team name
+      operationId: getSquadByTeamIdMatchId
+      parameters:
+        - name: teamId
+          in: path
+          description: Team Id to fetch squad details
+          required: true
+          schema:
+            type: integer
+        - name: matchId
+          in: path
+          description: Match Id to fetch squad details
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Squad'
+        '400':
+          description: Invalid input supplied
+        '404':
+          description: Squad deatils not found
+
+  /teams/statistics:
+    put:
+      tags:
+        - Team Management Service
+      summary: Add team statistics
+      description: Update team statistics
+      operationId: updateTeamStatistics
+      requestBody:
+        description: Add team statistic in existing record 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamStatistics'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/TeamStatistics'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamStatistics'
+        required: true
+      responses:
+        '200':
+          description: Team statistic updated successfully
+        '400':
+          description: Invalid input parameters
+        '401':
+          description: Unautherized request
+        '404':
+          description: Team statistics not found
+
+  /teams/statistics/{teamName}:
+    get:
+      tags:
+        - Team Management Service
+      summary: Returns Team statistic
+      description: Returns team statistic by team name
+      operationId: getTeamStatisticsByTeamName
+      parameters:
+        - name: teamName
+          in: path
+          description: Name of team that needs to be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamStatistics'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TeamStatistics'
+        '400':
+          description: Invalid input supplied
+        '404':
+          description: Team statistics not found
+
+components:
+  schemas:
+    TotalMatches:
+      type: object
+      properties:
+        format:
+          type: string
+          example: t20
+        opponentTeam:
+          type: string
+          example: TeamM
+        count:
+          type: integer
+          format: int32
+          example: 30
+      xml:
+        name: totalMatches
+    Squad:
+      type: object
+      properties:
+        teamId:
+          type: integer
+          format: int64
+          example: 1
+        matchId:
+          type: integer
+          format: int64
+          example: 1
+        players:
+          type: string
+          example: [7, 1, 2, 5, 45, 67, 8, 92, 37, 56, 78, 90, 12, 59, 70]
+      xml:
+        name: squad
+    MoM:
+      type: object
+      properties:
+        playerId:
+          type: integer
+          example: 1
+        playerName:
+          type: string
+          example: Player1
+        highestMoM:
+          type: integer
+          format: int32
+          example: 13
+      xml:
+        name: mom
+    TeamProfile:
+      required:
+        - teamName
+        - squad
+        - teamHistory
+        - totalMatches
+        - totalIccTitles
+      type: object
+      properties:
+        teamName:
+          type: string
+          example: TeamA
+        history:
+          type: string
+          example: "TeamA played their first Test match, against TeamB at VenueA, in 1932, but it took over 70 years for them to truly come into their own as a force in cricket: they developed into one of the game's powerhouses under CaptainA, and especially CaptainB, in the second decade of the 21st century."
+      xml:
+        name: teamProfile
+    TeamStatistics:
+      required:
+        - teamName
+        - captain
+        - vcaptain
+        - iccTitles
+        - totalMatches
+        - mom
+      type: object
+      properties:
+        teamName:
+          type: string
+          example: TeamA
+        captain:
+          type: string
+          example: PlayerA
+        vcaptain:
+          type: string
+          example: PlayerB
+        iccTitles:
+          type: integer
+          format: int64
+          example: 4
+        totalMatches:
+          $ref: '#/components/schemas/TotalMatches'
+        mom:
+          $ref: '#/components/schemas/MoM'
+      xml:
+        name: teamStatistics
