@@ -18,7 +18,7 @@ import lombok.Data;
 public class MoM {
 	private Long playerId;
 	private String playerName;
-	private String highestMoM;
+	private Integer highestMoM;
 
 	/**
 	 * No-argument constructor
@@ -35,7 +35,7 @@ public class MoM {
 	 * @param highestMoM
 	 * 
 	 */
-	public MoM(Long playerId, String playerName, String highestMoM) {
+	public MoM(Long playerId, String playerName, Integer highestMoM) {
 		super();
 		this.playerId = playerId;
 		this.playerName = playerName;
@@ -61,11 +61,11 @@ public class MoM {
 		this.playerName = playerName;
 	}
 
-	public String getHighestMoM() {
+	public Integer getHighestMoM() {
 		return highestMoM;
 	}
 
-	public void setHighestMoM(String highestMoM) {
+	public void setHighestMoM(Integer highestMoM) {
 		this.highestMoM = highestMoM;
 	}
 

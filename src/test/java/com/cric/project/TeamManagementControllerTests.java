@@ -27,7 +27,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 
 import com.cric.project.controller.TeamManagementController;
+import com.cric.project.model.MoM;
+import com.cric.project.model.Squad;
 import com.cric.project.model.TeamProfile;
+import com.cric.project.model.TeamStatistic;
+import com.cric.project.model.TotalMatches;
 import com.cric.project.service.SquadService;
 import com.cric.project.service.TeamProfileService;
 import com.cric.project.service.TeamStatisticService;
@@ -132,6 +136,19 @@ public class TeamManagementControllerTests {
 	TeamProfileValidator profileValidator1 = new TeamProfileValidator((long) 1, "TeamA",
 			"TeamA faced TeamB in the first ever Test, in 1877, and five years later the Tournament were born after TeamA's unlikely win at VenueA.");
 
+	Integer[] players1 = { 1, 2, 3, 23, 5, 6, 7, 8, 9, 10, 11, 12, 24, 14, 15 };
+
+	Squad squad1 = new Squad(1L, 1L, 1L, players1);
+
+	SquadValidator squadValidator1 = new SquadValidator(1L, 1L, 1L, players1);
+
+	TotalMatches totalMatches = new TotalMatches("t20", "TeamC", (long) 120);
+	MoM moM = new MoM((long) 1, "PlayerA", 12);
+
+	TeamStatistic teamStatistic1 = new TeamStatistic(1L, "TeamA", "PlayerA", "PlayerB", 5, totalMatches, moM);
+
+	TeamStatistic teamStatistic2 = new TeamStatistic(1L, "TeamA", "PlayerA", "PlayerB", 5, totalMatches, moM);
+
 	/**
 	 * set up mockMvc.
 	 */
@@ -183,7 +200,7 @@ public class TeamManagementControllerTests {
 	 * 
 	 */
 	@Test
-	public void createTeamProfile_ok() throws JsonProcessingException, Exception {
+	public void createTeamProfileSuccess() throws JsonProcessingException, Exception {
 		when(teamProfileService.save(teamProfile1)).thenReturn(teamProfile1);
 		MvcResult mvcResult;
 		mvcResult = mockMvc.perform(
@@ -191,6 +208,55 @@ public class TeamManagementControllerTests {
 						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andReturn();
 		assertEquals(HttpStatus.CREATED.value(), mvcResult.getResponse().getStatus());
+	}
+
+	/**
+	 * Test get squad REST end-point for success.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void getSquadSuccess() throws Exception {
+		when(squadService.findSquadByTeamIdMatchId(any(), any())).thenReturn(squad1);
+		MvcResult mvcResult = mockMvc
+				.perform(MockMvcRequestBuilders.get("/squads/1/1").accept(MediaType.APPLICATION_JSON)).andReturn();
+		assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
+		SquadValidator result = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(),
+				SquadValidator.class);
+		assertEquals(squadValidator1, result);
+	}
+
+	/**
+	 * Test fetch squad REST end-point for profile not found.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void getSquadNotFound() throws Exception {
+		when(squadService.findSquadByTeamIdMatchId((long) 2, (long) 2)).thenReturn(null);
+		when(messageSource.getMessage(any(), any(), any())).thenReturn("Squad not found in the records");
+		MvcResult mvcResult = mockMvc
+				.perform(MockMvcRequestBuilders.get("/squads/2/2").accept(MediaType.APPLICATION_JSON)).andReturn();
+		assertEquals(HttpStatus.NOT_FOUND.value(), mvcResult.getResponse().getStatus());
+		String result = mvcResult.getResponse().getContentAsString();
+		assertEquals(messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()), result);
+	}
+
+	/**
+	 * Test get team statistic REST end-point for success.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void getTeamStatisticSuccess() throws Exception {
+		when(teamStatisticService.findTeamStatisticByName(anyString())).thenReturn(teamStatistic1);
+		MvcResult mvcResult = mockMvc
+				.perform(MockMvcRequestBuilders.get("/teams/statistics/TeamA").accept(MediaType.APPLICATION_JSON))
+				.andReturn();
+		assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
+		TeamStatistic result = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(),
+				TeamStatistic.class);
+		assertEquals(teamStatistic2, result);
 	}
 
 }
