@@ -1,6 +1,7 @@
 package com.cric.project;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -11,10 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,7 +32,9 @@ import com.cric.project.service.SquadService;
 import com.cric.project.service.TeamProfileService;
 import com.cric.project.service.TeamStatisticService;
 import com.cric.project.validator.SquadValidator;
+import com.cric.project.validator.TeamProfileDuplicateValidator;
 import com.cric.project.validator.TeamProfileValidator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -89,6 +92,12 @@ public class TeamManagementControllerTests {
 	TeamProfileValidator teamProfileValidator;
 
 	/**
+	 * Team profile duplicate validator.
+	 */
+	@MockBean
+	TeamProfileDuplicateValidator teamProfileDuplicateValidator;
+
+	/**
 	 * Squad validator.
 	 */
 	@MockBean
@@ -103,15 +112,15 @@ public class TeamManagementControllerTests {
 	/**
 	 * Message source
 	 */
-	@Autowired
+	@MockBean
 	private MessageSource messageSource;
 
 	private final Logger logger = LoggerFactory.getLogger(TeamManagementControllerTests.class);
 
-	TeamProfile teamProfile1 = new TeamProfile(1L, "TeamA",
+	TeamProfile teamProfile1 = new TeamProfile((long) 1, "TeamA",
 			"TeamA faced TeamB in the first ever Test, in 1877, and five years later the Tournament were born after TeamA's unlikely win at VenueA.");
 
-	TeamProfile teamProfile2 = new TeamProfile(2L, "TeamC",
+	TeamProfile teamProfile2 = new TeamProfile((long) 2, "TeamC",
 			"Teamc are renowned for punching above their weight and being resourceful despite being among the least-populated Test-playing nations.");
 
 	TeamProfile teamProfile3 = new TeamProfile(3L, "TeamB", "TeamB faced TeamC in the Test, in 1977");
@@ -120,7 +129,7 @@ public class TeamManagementControllerTests {
 
 	TeamProfile teamProfile5 = new TeamProfile(4L, "TeamD", "TeamD faced TeamM in the Test, in 2000");
 
-	TeamProfileValidator profileValidator1 = new TeamProfileValidator(1L, "TeamA",
+	TeamProfileValidator profileValidator1 = new TeamProfileValidator((long) 1, "TeamA",
 			"TeamA faced TeamB in the first ever Test, in 1877, and five years later the Tournament were born after TeamA's unlikely win at VenueA.");
 
 	/**
@@ -132,7 +141,7 @@ public class TeamManagementControllerTests {
 	}
 
 	/**
-	 * Test get player REST end-point for success.
+	 * Test get team profile REST end-point for success.
 	 * 
 	 * @throws Exception
 	 */
@@ -147,19 +156,41 @@ public class TeamManagementControllerTests {
 		assertEquals(profileValidator1, result);
 	}
 
-//	/**
-//	 * Test fetch team profile REST end-point for profile not found.
-//	 * 
-//	 * @throws Exception
-//	 */
-//	@Test
-//	public void getTeamProfileNotFound() throws Exception {
-//		when(teamProfileService.findTeamProfileByName("TeamZ")).thenReturn(null);
-//		MvcResult mvcResult = mockMvc
-//				.perform(MockMvcRequestBuilders.get("/teams/TeamZ").accept(MediaType.APPLICATION_JSON)).andReturn();
-//		assertEquals(HttpStatus.NOT_FOUND.value(), mvcResult.getResponse().getStatus());
-//		String result = mvcResult.getResponse().getContentAsString();
-//		assertEquals(messageSource.getMessage("message.teamProfile.notFound", null, LocaleContextHolder.getLocale()),
-//				"Team profile not found in the records");
-//	}
+	/**
+	 * Test fetch team profile REST end-point for profile not found.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void getTeamProfileNotFound() throws Exception {
+		when(teamProfileService.findTeamProfileByName("TeamZ")).thenReturn(null);
+		when(messageSource.getMessage(any(), any(), any())).thenReturn("Team profile not found in the records");
+
+		MvcResult mvcResult = mockMvc
+				.perform(MockMvcRequestBuilders.get("/teams/TeamZ").accept(MediaType.APPLICATION_JSON)).andReturn();
+		assertEquals(HttpStatus.NOT_FOUND.value(), mvcResult.getResponse().getStatus());
+		String result = mvcResult.getResponse().getContentAsString();
+
+		assertEquals(messageSource.getMessage("message.teamProfile.notFound", null, LocaleContextHolder.getLocale()),
+				result);
+	}
+
+	/**
+	 * Team Profile REST end-point for success.
+	 * 
+	 * @throws Exception
+	 * @throws JsonProcessingException
+	 * 
+	 */
+	@Test
+	public void createTeamProfile_ok() throws JsonProcessingException, Exception {
+		when(teamProfileService.save(teamProfile1)).thenReturn(teamProfile1);
+		MvcResult mvcResult;
+		mvcResult = mockMvc.perform(
+				MockMvcRequestBuilders.post("/teams").content(new ObjectMapper().writeValueAsString(profileValidator1))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andReturn();
+		assertEquals(HttpStatus.CREATED.value(), mvcResult.getResponse().getStatus());
+	}
+
 }

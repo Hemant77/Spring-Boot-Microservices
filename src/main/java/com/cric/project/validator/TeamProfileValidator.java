@@ -73,6 +73,11 @@ public class TeamProfileValidator {
 		this.history = history;
 	}
 
+	@Override
+	public String toString() {
+		return "TeamProfileValidator [teamId=" + teamId + ", teamName=" + teamName + ", history=" + history + "]";
+	}
+
 	/**
 	 * hash code.
 	 * 
