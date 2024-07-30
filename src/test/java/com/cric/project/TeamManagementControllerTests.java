@@ -38,6 +38,7 @@ import com.cric.project.service.TeamStatisticService;
 import com.cric.project.validator.SquadValidator;
 import com.cric.project.validator.TeamProfileDuplicateValidator;
 import com.cric.project.validator.TeamProfileValidator;
+import com.cric.project.validator.TeamStatisticValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -147,7 +148,8 @@ public class TeamManagementControllerTests {
 
 	TeamStatistic teamStatistic1 = new TeamStatistic(1L, "TeamA", "PlayerA", "PlayerB", 5, totalMatches, moM);
 
-	TeamStatistic teamStatistic2 = new TeamStatistic(1L, "TeamA", "PlayerA", "PlayerB", 5, totalMatches, moM);
+	TeamStatisticValidator teamStatisticValidator1 = new TeamStatisticValidator(1L, "TeamA", "PlayerA", "PlayerB", 5,
+			totalMatches, moM);
 
 	/**
 	 * set up mockMvc.
@@ -254,9 +256,9 @@ public class TeamManagementControllerTests {
 				.perform(MockMvcRequestBuilders.get("/teams/statistics/TeamA").accept(MediaType.APPLICATION_JSON))
 				.andReturn();
 		assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
-		TeamStatistic result = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(),
-				TeamStatistic.class);
-		assertEquals(teamStatistic2, result);
+		TeamStatisticValidator result = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(),
+				TeamStatisticValidator.class);
+		assertEquals(teamStatisticValidator1, result);
 	}
 
 }

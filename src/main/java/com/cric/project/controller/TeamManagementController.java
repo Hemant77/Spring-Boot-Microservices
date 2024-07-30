@@ -34,6 +34,7 @@ import com.cric.project.validator.SquadDuplicateValidator;
 import com.cric.project.validator.SquadValidator;
 import com.cric.project.validator.TeamProfileDuplicateValidator;
 import com.cric.project.validator.TeamProfileValidator;
+import com.cric.project.validator.TeamStatisticValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
@@ -224,7 +225,6 @@ public class TeamManagementController {
 	public ResponseEntity<String> updateSquad(@Valid @RequestBody SquadValidator squadValidator,
 			BindingResult bindingResult, Model model) throws Exception {
 		Squad squad = createSquadObject(squadValidator);
-		squadDuplicateValidator.validate(squadValidator, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(ErrorHandlingUtil.isAccessAllowed(bindingResult), HttpStatus.BAD_REQUEST);
 		}
@@ -262,9 +262,9 @@ public class TeamManagementController {
 			ObjectMapper objectMapper = new ObjectMapper();
 			return new ResponseEntity<>(objectMapper.writeValueAsString(squad), HttpStatus.OK);
 		} else
-			return new ResponseEntity<>(
-					messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()),
-					HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(
+				messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()),
+				HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -275,8 +275,8 @@ public class TeamManagementController {
 	 * @return Success or error message.
 	 */
 	@PutMapping("/teams/statistics")
-	public ResponseEntity<String> updateTeamStatistic(@RequestBody Map<String, Object> teamStatisticJson)
-			throws Exception {
+	public ResponseEntity<String> updateTeamStatistic(@RequestBody Map<String, Object> teamStatisticJson,
+			BindingResult bindingResult, Model model) throws Exception {
 		String username = "user";
 		String role = "role";
 		if (!AccessUtil.isAccessAllowed(username, role)) {
@@ -284,15 +284,18 @@ public class TeamManagementController {
 					messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()),
 					HttpStatus.UNAUTHORIZED);
 		} else {
+			if (bindingResult.hasErrors()) {
+				return new ResponseEntity<>(ErrorHandlingUtil.isAccessAllowed(bindingResult), HttpStatus.BAD_REQUEST);
+			}
 			ObjectMapper mapper = new ObjectMapper();
-			TeamStatistic teamStatistic = new TeamStatistic(null,
+			TeamStatisticValidator teamStatisticValidator = new TeamStatisticValidator(null,
 					mapper.convertValue(teamStatisticJson.get("teamName"), String.class),
 					mapper.convertValue(teamStatisticJson.get("captain"), String.class),
 					mapper.convertValue(teamStatisticJson.get("vcaptain"), String.class),
 					mapper.convertValue(teamStatisticJson.get("iccTitles"), Integer.class),
 					mapper.convertValue(teamStatisticJson.get("totalMatches"), TotalMatches.class),
 					mapper.convertValue(teamStatisticJson.get("mom"), MoM.class));
-
+			TeamStatistic teamStatistic = createTeamStatistic(teamStatisticValidator);
 			if (null != teamStatisticService.update(teamStatistic))
 				return new ResponseEntity<>(messageSource.getMessage("message.teamStatistic.updateSuccessful", null,
 						LocaleContextHolder.getLocale()), HttpStatus.OK);
@@ -345,5 +348,21 @@ public class TeamManagementController {
 		squad.setMatchId(squadValidator.getMatchId());
 		squad.setPlayers(squadValidator.getPlayers());
 		return squad;
+	}
+
+	/**
+	 * @param TeamStatisticValidator This service convert TeamStatisticValidator to Squad object
+	 * @return TeamStatistic
+	 */
+	private TeamStatistic createTeamStatistic(TeamStatisticValidator teamStatisticValidator) {
+		TeamStatistic teamStatistic = new TeamStatistic();
+		teamStatistic.setId(teamStatisticValidator.getId());
+		teamStatistic.setTeamName(teamStatisticValidator.getTeamName());
+		teamStatistic.setCaptain(teamStatisticValidator.getCaptain());
+		teamStatistic.setVcaptain(teamStatisticValidator.getVcaptain());
+		teamStatistic.setIccTitles(teamStatisticValidator.getIccTitles());
+		teamStatistic.setTotalMatches(teamStatisticValidator.getTotalMatches());
+		teamStatistic.setMom(teamStatisticValidator.getMom());
+		return teamStatistic;
 	}
 }
