@@ -120,12 +120,15 @@ public class TeamManagementController {
 		String username = "user";
 		String role = "role";
 		if (!AccessUtil.isAccessAllowed(username, role)) {
+			logger.warn(messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(
 					messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()),
 					HttpStatus.UNAUTHORIZED);
 		} else {
 			teamProfileService.save(teamProfile);
 			teamStatisticService.save(teamProfile);
+			logger.info(messageSource.getMessage("message.teamProfile.createSuccessful", null,
+					LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(messageSource.getMessage("message.teamProfile.createSuccessful", null,
 					LocaleContextHolder.getLocale()), HttpStatus.CREATED);
 		}
@@ -146,17 +149,23 @@ public class TeamManagementController {
 		String username = "user";
 		String role = "role";
 		if (!AccessUtil.isAccessAllowed(username, role)) {
+			logger.warn(messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(
 					messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()),
 					HttpStatus.UNAUTHORIZED);
 		} else {
-			if (null != teamProfileService.update(teamProfile))
+			if (null != teamProfileService.update(teamProfile)) {
+				logger.info(messageSource.getMessage("message.teamProfile.updateSuccessful", null,
+						LocaleContextHolder.getLocale()));
 				return new ResponseEntity<>(messageSource.getMessage("message.teamProfile.updateSuccessful", null,
 						LocaleContextHolder.getLocale()), HttpStatus.OK);
-			else
+			} else {
+				logger.error(messageSource.getMessage("message.teamProfile.notFound", null,
+						LocaleContextHolder.getLocale()));
 				return new ResponseEntity<>(
 						messageSource.getMessage("message.teamProfile.notFound", null, LocaleContextHolder.getLocale()),
 						HttpStatus.NOT_FOUND);
+			}
 		}
 	}
 
@@ -172,8 +181,12 @@ public class TeamManagementController {
 		TeamProfile teamProfile = teamProfileService.findTeamProfileByName(teamName);
 		if (null != teamProfile) {
 			ObjectMapper objectMapper = new ObjectMapper();
+			logger.info(messageSource.getMessage("message.teamProfile.fetchSuccessful", null,
+					LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(objectMapper.writeValueAsString(teamProfile), HttpStatus.OK);
 		} else {
+			logger.error(
+					messageSource.getMessage("message.teamProfile.notFound", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(
 					messageSource.getMessage("message.teamProfile.notFound", null, LocaleContextHolder.getLocale()),
 					HttpStatus.NOT_FOUND);
@@ -201,11 +214,14 @@ public class TeamManagementController {
 		String username = "user";
 		String role = "role";
 		if (!AccessUtil.isAccessAllowed(username, role)) {
+			logger.warn(messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(
 					messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()),
 					HttpStatus.UNAUTHORIZED);
 		} else {
 			squadService.save(squad);
+			logger.info(
+					messageSource.getMessage("message.squad.createSuccessful", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(
 					messageSource.getMessage("message.squad.createSuccessful", null, LocaleContextHolder.getLocale()),
 					HttpStatus.CREATED);
@@ -231,17 +247,22 @@ public class TeamManagementController {
 		String username = "user";
 		String role = "role";
 		if (!AccessUtil.isAccessAllowed(username, role)) {
+			logger.warn(messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(
 					messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()),
 					HttpStatus.UNAUTHORIZED);
 		} else {
-			if (null != squadService.update(squad))
+			if (null != squadService.update(squad)) {
+				logger.info(messageSource.getMessage("message.squad.updateSuccessful", null,
+						LocaleContextHolder.getLocale()));
 				return new ResponseEntity<>(messageSource.getMessage("message.squad.updateSuccessful", null,
 						LocaleContextHolder.getLocale()), HttpStatus.OK);
-			else
+			} else {
+				logger.error(messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()));
 				return new ResponseEntity<>(
 						messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()),
 						HttpStatus.NOT_FOUND);
+			}
 
 		}
 	}
@@ -260,11 +281,15 @@ public class TeamManagementController {
 		Squad squad = squadService.findSquadByTeamIdMatchId(teamId, matchId);
 		if (null != squad) {
 			ObjectMapper objectMapper = new ObjectMapper();
+			logger.info(
+					messageSource.getMessage("message.squad.fetchSuccessful", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(objectMapper.writeValueAsString(squad), HttpStatus.OK);
-		} else
-		return new ResponseEntity<>(
-				messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()),
-				HttpStatus.NOT_FOUND);
+		} else {
+			logger.error(messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()));
+			return new ResponseEntity<>(
+					messageSource.getMessage("message.squad.notFound", null, LocaleContextHolder.getLocale()),
+					HttpStatus.NOT_FOUND);
+		}
 	}
 
 	/**
@@ -280,6 +305,7 @@ public class TeamManagementController {
 		String username = "user";
 		String role = "role";
 		if (!AccessUtil.isAccessAllowed(username, role)) {
+			logger.warn(messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(
 					messageSource.getMessage("message.user.unautherised", null, LocaleContextHolder.getLocale()),
 					HttpStatus.UNAUTHORIZED);
@@ -296,12 +322,17 @@ public class TeamManagementController {
 					mapper.convertValue(teamStatisticJson.get("totalMatches"), TotalMatches.class),
 					mapper.convertValue(teamStatisticJson.get("mom"), MoM.class));
 			TeamStatistic teamStatistic = createTeamStatistic(teamStatisticValidator);
-			if (null != teamStatisticService.update(teamStatistic))
+			if (null != teamStatisticService.update(teamStatistic)) {
+				logger.info(messageSource.getMessage("message.teamStatistic.updateSuccessful", null,
+						LocaleContextHolder.getLocale()));
 				return new ResponseEntity<>(messageSource.getMessage("message.teamStatistic.updateSuccessful", null,
 						LocaleContextHolder.getLocale()), HttpStatus.OK);
-			else
+			} else {
+				logger.error(messageSource.getMessage("message.teamStatistic.updateSuccessful", null,
+						LocaleContextHolder.getLocale()));
 				return new ResponseEntity<>(messageSource.getMessage("message.teamStatistic.notFound", null,
 						LocaleContextHolder.getLocale()), HttpStatus.NOT_FOUND);
+			}
 		}
 	}
 
@@ -317,11 +348,15 @@ public class TeamManagementController {
 		TeamStatistic teamStatistic = teamStatisticService.findTeamStatisticByName(teamName);
 		if (teamStatistic != null) {
 			ObjectMapper objectMapper = new ObjectMapper();
+			logger.info(messageSource.getMessage("message.teamStatistic.fetchSuccessful", null,
+					LocaleContextHolder.getLocale()));
 			return new ResponseEntity<>(objectMapper.writeValueAsString(teamStatistic), HttpStatus.OK);
 		} else
-			return new ResponseEntity<>(
-					messageSource.getMessage("message.teamStatistic.notFound", null, LocaleContextHolder.getLocale()),
-					HttpStatus.NOT_FOUND);
+			logger.error(
+					messageSource.getMessage("message.teamStatistic.notFound", null, LocaleContextHolder.getLocale()));
+		return new ResponseEntity<>(
+				messageSource.getMessage("message.teamStatistic.notFound", null, LocaleContextHolder.getLocale()),
+				HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -351,7 +386,8 @@ public class TeamManagementController {
 	}
 
 	/**
-	 * @param TeamStatisticValidator This service convert TeamStatisticValidator to Squad object
+	 * @param TeamStatisticValidator This service convert TeamStatisticValidator to
+	 *                               Squad object
 	 * @return TeamStatistic
 	 */
 	private TeamStatistic createTeamStatistic(TeamStatisticValidator teamStatisticValidator) {
