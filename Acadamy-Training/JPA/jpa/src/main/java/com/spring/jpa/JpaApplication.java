@@ -1,7 +1,10 @@
 package com.spring.jpa;
 
+import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.spring.jpa.config.Config;
+import com.spring.jpa.model.Product;
+import com.spring.jpa.service.ProductService;
 
 @SpringBootApplication
 @Import(Config.class)
@@ -28,6 +33,9 @@ public class JpaApplication {
 
 		private JdbcTemplate jdbcTemplate;
 
+		@Autowired
+		ProductService productService;
+
 		public QueryAccountCountRunner(JdbcTemplate jdbcTemplate) {
 			this.jdbcTemplate = jdbcTemplate;
 		}
@@ -38,9 +46,11 @@ public class JpaApplication {
 			long productCount = this.jdbcTemplate.queryForObject(QUERY, Long.class);
 			logger.info("Number of products: {}", productCount);
 
-//			logger.info("Get product by Id");
-//			productRepository.findById(2);
-
+			Random random = new Random();
+			int id = random.nextInt((3 - 1) + 1) + 1;
+			logger.info("Get product by Id");
+			Product product = productService.fetchProductById(id);
+			logger.info("Id : {}, Product : {}", id, product.toString());
 		}
 	}
 

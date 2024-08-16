@@ -11,4 +11,21 @@ public class Config {
 	@Autowired
 	DataSource dataSource;
 
+//	@Bean
+//	public RewardNetwork rewardNetwork(
+//		AccountRepository accountRepository, 
+//		RestaurantRepository restaurantRepository, 
+//		RewardRepository rewardRepository ) {
+//		return new RewardNetworkImpl(
+//			accountRepository, 
+//			restaurantRepository, 
+//			rewardRepository);
+//	}
+
+//	@Bean
+//	public ProductRepository productRepository() {
+//		ProductRepositoryImpl repository = new ProductRepositoryImpl();
+//		repository.setDataSource(dataSource);
+//		return repository;
+//	}
 }
