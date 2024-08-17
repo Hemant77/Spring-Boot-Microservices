@@ -12,20 +12,14 @@
 	</parent>
 
 	<groupId>com.cric.project</groupId>
-	<artifactId>spring-boot-2-jdbc-with-h2</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>cric-app</artifactId>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Cric-App</name>
 	<description>Micorservices Spring Boot</description>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>[2.3.0,]</version>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -82,14 +76,14 @@
 			<version>2.6.0</version>
 		</dependency>
 		<dependency>
-   			 <groupId>com.networknt</groupId>
-    		<artifactId>exception</artifactId>
-    		<version>1.5.5</version>
+			<groupId>com.networknt</groupId>
+			<artifactId>exception</artifactId>
+			<version>1.5.5</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.json</groupId>
-    		<artifactId>json</artifactId>
-    		<version>20231013</version>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20231013</version>
 		</dependency>
 	</dependencies>
 
