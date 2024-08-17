@@ -10,9 +10,11 @@ import jakarta.persistence.Table;
 public class Product {
 	@Id
 	@Column(name = "id")
-	private Long id;
+//	@Column is only required if we are using the column name(i.e. id) and variable name(i.e. productId)
+	private Long productId;
 
-	@Column(name = "name")
+//	@Column(name = "name")
+//	@Column is not required if we are using the same column name and variable name
 	private String name;
 
 	@Column(name = "price")
@@ -22,19 +24,19 @@ public class Product {
 		super();
 	}
 
-	public Product(Long id, String name, float price) {
+	public Product(Long productId, String name, float price) {
 		super();
-		this.id = id;
+		this.productId = productId;
 		this.name = name;
 		this.price = price;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getProductId() {
+		return productId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(Long productId) {
+		this.productId = productId;
 	}
 
 	public String getName() {
@@ -55,7 +57,7 @@ public class Product {
 
 	@Override
 	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", price=" + price + "]";
+		return "Product [productId=" + productId + ", name=" + name + ", price=" + price + "]";
 	}
 
 }
