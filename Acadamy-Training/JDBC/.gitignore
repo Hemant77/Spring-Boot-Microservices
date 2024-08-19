@@ -1,0 +1,10 @@
+jdbc/.mvn
+jdbc/.classpath
+jdbc/.project
+jdbc/.settings
+jdbc/target
+jdbc-autoconfig/.mvn
+jdbc-autoconfig/.classpath
+jdbc-autoconfig/.project
+jdbc-autoconfig/.settings
+jdbc-autoconfig/target
