@@ -54,7 +54,6 @@ import jakarta.validation.Valid;
  * @version 1.0
  */
 
-@SpringBootApplication(scanBasePackages = { "com.cric.project.*" })
 @RestController
 @CrossOrigin
 public class TeamManagementController {
